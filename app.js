@@ -43,7 +43,7 @@ app.post("/send", (req, res) => {
         return res.status(400).json({ message: 'Client not ready yet' });
     }
 
-    let destination = req.query.customerNumber;
+    let destination = req.query.destination;
     let message = req.query.message;
 
     try {
@@ -51,9 +51,9 @@ app.post("/send", (req, res) => {
         destination = `62${destination}@c.us`;
         console.log(destination);
         console.log(message);
-        
+
         client.sendMessage(destination, message).then(() => {
-            res.status(200).json({ message: "success" });
+            res.status(200).json({ message: "message sent" });
         }).catch((error) => {
             res.status(400).json({ message: error });
         });
