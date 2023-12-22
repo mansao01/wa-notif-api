@@ -7,7 +7,10 @@ let isClientReady = false;
 
 
 const client = new Client({
-    puppeteer: {headless: true},
+    puppeteer: {
+        headless: true,
+        args: ['--no-sandbox']
+    },
     authStrategy: new LocalAuth()
 
 });
@@ -40,7 +43,7 @@ app.get('/', (req, res) => {
 
 app.post("/send", async (req, res) => {
     if (!isClientReady) {
-        return res.status(400).json({ message: 'Client not ready yet' });
+        return res.status(400).json({message: 'Client not ready yet'});
     }
 
     try {
@@ -48,7 +51,7 @@ app.post("/send", async (req, res) => {
         let message = req.query.message;
 
         if (!destination || !message) {
-            return res.status(400).json({ message: 'Destination or message missing' });
+            return res.status(400).json({message: 'Destination or message missing'});
         }
 
         destination = destination.substring(1);
@@ -59,13 +62,13 @@ app.post("/send", async (req, res) => {
 
         const checkUser = await client.isRegisteredUser(destination);
         if (!checkUser) {
-            return res.status(400).json({ message: "User not registered" });
+            return res.status(400).json({message: "User not registered"});
         }
 
         await client.sendMessage(destination, message);
-        res.status(200).json({ message: "Message sent successfully" });
+        res.status(200).json({message: "Message sent successfully"});
     } catch (error) {
-        res.status(400).json({ message: error.message || 'An error occurred' });
+        res.status(400).json({message: error.message || 'An error occurred'});
     }
 });
 
