@@ -1,6 +1,5 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const express = require("express");
-const qrcode = require("qrcode-terminal");
 const cors = require("cors");
 const app = express();
 app.use(cors());
@@ -42,11 +41,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/getqr", (req, res) => {
-  if (!QrCodeData) {
+  if (QrCodeData) {
+    res.status(200).send(QrCodeData);
+  } else {
     return res.status(400).json({ message: "Tidak ada data QR code tersedia" });
   }
-
-  res.status(200).send(QrCodeData);
 });
 
 app.post("/send", async (req, res) => {
@@ -85,4 +84,3 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
-module.exports = app;
