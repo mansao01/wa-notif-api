@@ -18,9 +18,7 @@ const client = new Client({
 client.initialize();
 
 client.on("qr", (qr) => {
-  console.log("Pindai kode QR dengan ponsel Anda:");
   QrCodeData = qr;
-  qrcode.generate(qr, { small: true });
 });
 
 client.on("authenticated", (session) => {
@@ -87,3 +85,4 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
+module.exports = app;
