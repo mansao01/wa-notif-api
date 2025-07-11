@@ -72,6 +72,40 @@ app.post("/send", async (req, res) => {
     }
 });
 
+app.post("/sendConfirmation", async (req, res) => {
+    if (!isClientReady) {
+        return res.status(400).json({message: 'Client not ready yet'});
+    }
+
+    try {
+        let destination = req.query.destination;
+        let message = req.query.message;
+        let courierName = req.query.courier;
+        let sendMessage = `${message} ${courierName}`;
+
+        if (!destination || !message || !courierName) {
+            return res.status(400).json({message: 'Destination or message missing'});
+        }
+
+        destination = destination.substring(1);
+        destination = `62${destination}@c.us`;
+
+        console.log(destination);
+        console.log(message);
+        console.log(courierName);
+
+        const checkUser = await client.isRegisteredUser(destination);
+        if (!checkUser) {
+            return res.status(400).json({message: "User not registered"});
+        }
+
+        await client.sendMessage(destination, sendMessage);
+        res.status(200).json({message: "Message sent successfully"});
+    } catch (error) {
+        res.status(400).json({message: error.message || 'An error occurred'});
+    }
+});
+
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
