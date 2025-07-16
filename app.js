@@ -78,12 +78,13 @@ app.post("/sendConfirmation", async (req, res) => {
     }
 
     try {
-        let destination = req.query.destination;
-        let message = req.query.message;
+        let destination = req.query.destination.trim();
         let courierName = req.query.courier;
-        let sendMessage = `${message} ${courierName}`;
+        let trackNumber = req.query.tn
+        let sendMessage = `permisi kak kami dari Lazada Express mau mengonfirmasi apakah sudah menerima paket dengan resi ${trackNumber} ? cs. ${courierName} `;
 
-        if (!destination || !message || !courierName) {
+
+        if (!destination || !courierName) {
             return res.status(400).json({message: 'Destination or message missing'});
         }
 
@@ -91,7 +92,7 @@ app.post("/sendConfirmation", async (req, res) => {
         destination = `62${destination}@c.us`;
 
         console.log(destination);
-        console.log(message);
+        console.log(sendMessage);
         console.log(courierName);
 
         const checkUser = await client.isRegisteredUser(destination);
@@ -100,6 +101,39 @@ app.post("/sendConfirmation", async (req, res) => {
         }
 
         await client.sendMessage(destination, sendMessage);
+        res.status(200).json({message: "Message sent successfully"});
+    } catch (error) {
+        res.status(400).json({message: error.message || 'An error occurred'});
+    }
+});
+
+app.post("/sendOverloadConfirmation", async (req, res) => {
+    if (!isClientReady) {
+        return res.status(400).json({message: 'Client not ready yet'});
+    }
+
+    try {
+        let destination = req.query.destination.trim();
+        let message = "permisi kak kami dari Lazada Express mau mengonfirmasi bahwa kurir kami overload, jadi paket kakak akan dikirmkan besok. Terimakasih.";
+
+
+        if (!destination) {
+            return res.status(400).json({message: 'Destination or message missing'});
+        }
+
+        destination = destination.substring(1);
+        destination = `62${destination}@c.us`;
+
+        console.log(destination);
+        console.log(message);
+
+
+        const checkUser = await client.isRegisteredUser(destination);
+        if (!checkUser) {
+            return res.status(400).json({message: "User not registered"});
+        }
+
+        await client.sendMessage(destination, message);
         res.status(200).json({message: "Message sent successfully"});
     } catch (error) {
         res.status(400).json({message: error.message || 'An error occurred'});
